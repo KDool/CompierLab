@@ -1,0 +1,5 @@
+*.o
+*.exe
+.DS_Store
+__MAC_OSX
+scanner/scanner
