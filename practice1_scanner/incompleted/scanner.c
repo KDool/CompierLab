@@ -47,37 +47,23 @@
     readChar();
   }
 
-  Token* readIdentKeyword(void) {
-    // TODO
-    Token *token;
-    // token -> TokenType == TK_IDENT
-    token = makeToken(TK_IDENT,lineNo,colNo);
-    int count = 0;
-    // read string
-
-    while (charCodes[currentChar] == CHAR_LETTER || charCodes[currentChar] == CHAR_DIGIT)
-    {
-      /* code */
-      if (count == 16){
-        error(ERM_IDENTTOOLONG,lineNo,colNo);
-        return NULL;
-      }
-      token->string[count++] = (char)currentChar;
-      readChar();
-    }
-
-    TokenType tokenType = checkKeyword(token->string);
-    //check form token
-    if(KW_PROGRAM <= tokenType && tokenType <= KW_TO){
-      token->tokenType = tokenType;
-    }
-
-    if (token->tokenType != TK_NONE && token->tokenType != TK_IDENT && token->tokenType != TK_CHAR && token->tokenType != TK_EOF){
-      token->string[0] = '\0';  
-    }
-
-    return token;
+Token* readIdentKeyword(void) {
+  // TODO
+  int length = 0;
+  Token *token = makeToken(TK_IDENT, lineNo, colNo);
+  while (charCodes[currentChar] == CHAR_LETTER || charCodes[currentChar] == CHAR_DIGIT) {
+    token->string[length++] = currentChar;
+    if (length > 15)  // MAX_IDENT_LEN = 15 
+      error(ERR_IDENTTOOLONG, token->lineNo, token->colNo);
+    readChar();
   }
+  token->string[length] = '\0';
+  TokenType tokenType = checkKeyword(token->string);
+  if (tokenType != TK_NONE)  // is a keyword 
+    token->tokenType = tokenType;
+  return token;
+}
+
 
   Token* readNumber(void) {
     // TODO
@@ -89,16 +75,19 @@
       readChar();
     }
     token->string[count] = '\0';
-    token->value = atoi(token->string);
-    printf("COUNT: %d\n",count);
-    printf("TOKEN VALUE: %d\n",token->value);
+    token->value = atoi(token->string);  // String to Integer
+    long check_int =  atol(token->string); // String to Long 
+    // printf("COUNT: %d\n",count);
+    // printf("TOKEN VALUE: %d\n",token->value);
     if (count>10){
       error(ERR_NUMBERTOOLONG,lineNo,colNo);
       return NULL;
     }
     if (count == 10){
-      printf("TOKEN VALUE: %d\n",token->value);
-      if (token->value >2147483647 || token->value < 0){
+      // printf("CHECK INT: %d\n",check_int);
+      if (check_int >2147483647 || check_int < 0){
+        // long cc= check_int-2147483647;
+        // printf("CC is: %ld\n",cc);
         error(ERR_NUMBERTOOLONG,lineNo,colNo);
         return NULL;
       }
