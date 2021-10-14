@@ -6,7 +6,7 @@
 
   #include <stdio.h>
   #include <stdlib.h>
-
+  #include <string.h>
   #include "reader.h"
   #include "charcode.h"
   #include "token.h"
@@ -115,6 +115,66 @@ Token* readIdentKeyword(void) {
     return token;
   }
 
+  Token* readConstString(void){
+    Token *token;
+    int i=0, ln,cn;
+    ln = lineNo;
+    cn = colNo;
+    token = makeToken(TK_STRING, lineNo, colNo);
+    while(1){
+      if (currentChar == EOF){
+        error(ERR_INVALIDSTRINGCONSTANT,ln,cn);
+        break;
+      }
+
+      else {
+      readChar();
+      token->string[i++] = (char)currentChar;
+      // check current digit is  or not  
+      if(charCodes[currentChar]== CHAR_SINGLEQUOTE){
+        readChar();
+        // token->string[i++] = (char)currentChar;
+        if(charCodes[currentChar] != CHAR_SINGLEQUOTE ){
+          // print a quote with 2 continous quots ''
+  
+          token->string[--i] = '\0';
+          break;
+          // return token;
+        }
+        else if (charCodes[currentChar] == CHAR_SINGLEQUOTE){
+          continue;
+        }
+      }
+      }
+
+    }
+
+    readChar();
+    //TODO - Function check string is valid or not
+    int checkValid = 1;
+    int length = strlen(token->string);
+    if (length>255){
+      checkValid = 0; // Invalid
+      error(ERR_STRINGTOOLONG,ln,cn);
+    }
+    else{
+      for(int count=0; count<length; count++){
+        if(token->string[count]<33){
+          // Non-Printable Characters
+          error(ERR_INVALIDSTRINGCONSTANT,ln,cn);
+          checkValid = 0;
+          break;
+        }
+        }
+    }
+    // printf("Valid? : %d\n",checkValid);
+    if(checkValid==0) token->tokenType=TK_NONE;
+    if (checkValid ==1 && length==1) token->tokenType = TK_CHAR;
+   return token;
+  }
+
+ 
+
   Token* getToken(void) {
     Token *token;
     int ln, cn;
@@ -217,7 +277,7 @@ Token* readIdentKeyword(void) {
       readChar();
       return token;
     case CHAR_SINGLEQUOTE: 
-      return readConstChar();
+      return readConstString();
     case CHAR_LPAR:
       ln = lineNo;
       cn = colNo;
@@ -236,12 +296,12 @@ Token* readIdentKeyword(void) {
       {
         return makeToken(SB_LSEL, ln, cn);
       }
-      return makeToken(SB_LSB, ln, cn);
+      return makeToken(SB_LSEL, ln, cn);
     case CHAR_RSB:
       ln = lineNo;
       cn = colNo;
       readChar();
-      return makeToken(SB_RSB, ln, cn);
+      return makeToken(SB_RSEL, ln, cn);
 
       // ....
       // TODO
@@ -267,6 +327,7 @@ Token* readIdentKeyword(void) {
     case TK_NUMBER: printf("TK_NUMBER(%s)\n", token->string); break;
     case TK_CHAR: printf("TK_CHAR(\'%s\')\n", token->string); break;
     case TK_EOF: printf("TK_EOF\n"); break;
+    case TK_STRING: printf("TK_STRING(\'%s\')\n", token->string); break;
 
     case KW_PROGRAM: printf("KW_PROGRAM\n"); break;
     case KW_CONST: printf("KW_CONST\n"); break;
