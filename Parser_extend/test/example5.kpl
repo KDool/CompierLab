@@ -1,0 +1,20 @@
+PROGRAM Example5;
+VAR i:INTEGER;
+    Sum:INTEGER;
+    N:INTEGER;
+
+FUNCTION square(n:INTEGER):INTEGER;
+    BEGIN
+        square := n*n;
+    END;
+
+BEGIN
+    N := READI;
+    Sum := 0;
+    FOR i := 0 to N DO
+        BEGIN
+            Sum := Sum + square(i);
+        END;
+    CALL WRITELN;
+    CALL WRITEI(f(N))
+END.
