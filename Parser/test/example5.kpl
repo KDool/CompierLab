@@ -8,7 +8,6 @@ FUNCTION square(n:INTEGER):INTEGER;
         square := n*n;
     END;
 
-
 BEGIN
     N := READI;
     Sum := 0;

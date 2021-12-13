@@ -51,6 +51,7 @@ void compileBlock(void) {
 }
 
 void compileBlock2(void) {
+  assert("Parsing a Block2 ....");
   if (lookAhead->tokenType == KW_TYPE) {
     eat(KW_TYPE);
     compileTypeDecl();
@@ -58,9 +59,11 @@ void compileBlock2(void) {
     compileBlock3();
   } 
   else compileBlock3();
+  assert("Block2 parsed!");
 }
 
 void compileBlock3(void) {
+  assert("Parsing a Block3 ....");
   if (lookAhead->tokenType == KW_VAR) {
     eat(KW_VAR);
     compileVarDecl();
@@ -68,17 +71,39 @@ void compileBlock3(void) {
     compileBlock4();
   } 
   else compileBlock4();
+  assert("Block3 parsed!");
 }
 
 void compileBlock4(void) {
-  compileSubDecls();
-  compileBlock5();
+  assert("Parsing a Block4 ....");
+  if(lookAhead->tokenType == KW_FUNCTION){
+    compileFuncDecls();
+    compileBlock5();
+  }
+  else{
+    compileBlock5();
+  }
+  assert("Block4 parsed!");
 }
 
-void compileBlock5(void) {
+void compileBlock5(void){
+  assert("Parsing a Block5 ....");
+  if(lookAhead->tokenType == KW_PROCEDURE){
+    compileProcDecls();
+    compileBlock6();
+  }
+  else{
+    compileBlock6();
+  }
+  assert("Block5 parsed!");
+}
+
+void compileBlock6(void) {
+  assert("Parsing a Block6 ....");
   eat(KW_BEGIN);
   compileStatements();
   eat(KW_END);
+  assert("Block6 parsed!");
 }
 
 void compileConstDecls(void) {
@@ -91,7 +116,7 @@ void compileConstDecls(void) {
 void compileConstDecl(void) {
   assert("Parsing constant...");
   eat(TK_IDENT);
-  eat(SB_EQUAL);
+  eat(SB_EQ);
   compileConstant();
   eat(SB_SEMICOLON);
   assert("Constant parsed !");
@@ -152,6 +177,16 @@ void compileSubDecls(void) {
   assert("Subtoutines parsed ....");
 }
 
+// new compileFuncDecls
+void compileFuncDecls(void){
+  assert("Parsing FuncDecls....");
+  if(lookAhead->tokenType == KW_FUNCTION){
+    compileFuncDecl();
+    compileFuncDecls();
+  }
+  
+  assert("FuncDecls parsed!");
+}
 void compileFuncDecl(void) {
   assert("Parsing a function ....");
   // TODO
@@ -165,6 +200,16 @@ void compileFuncDecl(void) {
   eat(SB_SEMICOLON);
 
   assert("Function parsed ....");
+}
+
+// New CompileProcDecls()
+void compileProcDecls(void){
+  assert("Parsing ProDecls...");
+  if(lookAhead->tokenType == KW_PROCEDURE){
+    compileProcDecl();
+    compileProcDecls();
+  }
+  assert("Parsed ProDecls!");
 }
 
 void compileProcDecl(void) {

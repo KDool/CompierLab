@@ -1,0 +1,10 @@
+program Example5; (* Example 1 *)
+const c = 1;
+type t = char;
+function f(i : integer):char;
+const b = c;
+type a = array(.5.) of t;
+begin
+end;
+begin
+end. (* Example 1 *)
